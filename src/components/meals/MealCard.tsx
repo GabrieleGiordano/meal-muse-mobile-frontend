@@ -3,7 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar, Edit } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface Ingredient {
   name: string;
@@ -27,6 +30,7 @@ interface Meal {
 
 interface MealCardProps {
   meal: Meal;
+  onReschedule?: (mealId: string, newDate: Date) => void;
 }
 
 const mealTypeLabels = {
@@ -43,11 +47,31 @@ const mealTypeColors = {
   dinner: 'bg-blue-100 text-blue-800'
 };
 
-export const MealCard = ({ meal }: MealCardProps) => {
+export const MealCard = ({ meal, onReschedule }: MealCardProps) => {
   const handleVideoClick = () => {
     if (meal.videoUrl) {
       window.open(meal.videoUrl, '_blank');
     }
+  };
+
+  const handleReschedule = (newDateStr: string) => {
+    const newDate = new Date(newDateStr);
+    onReschedule?.(meal.id, newDate);
+    toast({
+      title: "Pasto riprogrammato",
+      description: `${meal.title} è stato spostato a ${newDate.toLocaleDateString('it-IT')}`
+    });
+  };
+
+  // Generate next 7 days for rescheduling
+  const getNextWeek = () => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
   };
 
   return (
@@ -130,14 +154,47 @@ export const MealCard = ({ meal }: MealCardProps) => {
               📹 Video Ricetta
             </Button>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-          >
-            <Calendar className="w-4 h-4 mr-1" />
-            Riprogramma
-          </Button>
+          
+          {onReschedule && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Riprogramma
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Riprogramma {meal.title}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Seleziona un nuovo giorno per questo pasto
+                  </p>
+                  <Select onValueChange={handleReschedule}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleziona un giorno" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getNextWeek().map((date, index) => (
+                        <SelectItem key={index} value={date.toISOString().split('T')[0]}>
+                          {date.toLocaleDateString('it-IT', { 
+                            weekday: 'long', 
+                            day: 'numeric', 
+                            month: 'long' 
+                          })}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </CardContent>
     </Card>
