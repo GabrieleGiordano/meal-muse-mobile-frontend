@@ -30,7 +30,7 @@ const mockMeals = [
       'Al mattino aggiungi i frutti di bosco'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    mealType: 'breakfast'
+    mealType: 'breakfast' as const
   },
   {
     id: '2',
@@ -53,7 +53,7 @@ const mockMeals = [
       'Condisci con olio e servi'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    mealType: 'lunch'
+    mealType: 'lunch' as const
   }
 ];
 
