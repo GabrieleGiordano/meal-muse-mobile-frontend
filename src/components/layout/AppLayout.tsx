@@ -1,10 +1,10 @@
 
 import { Outlet, Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { BottomNavigation } from './BottomNavigation';
 
 export const AppLayout = () => {
-  const { user, isLoading } = useAuth();
+  const { user, userProfile, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -21,7 +21,7 @@ export const AppLayout = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  if (!user.isOnboarded) {
+  if (!userProfile?.isOnboarded) {
     return <Navigate to="/onboarding" replace />;
   }
 

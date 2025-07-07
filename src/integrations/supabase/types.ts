@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_data: {
+        Row: {
+          age: number | null
+          allergies: string[] | null
+          created_at: string
+          family_members: number | null
+          gender: string | null
+          goal: string | null
+          height: number | null
+          id: string
+          meals: string[] | null
+          monthly_budget: number | null
+          reminder_interval: number | null
+          sport_frequency: number | null
+          sport_type: string | null
+          updated_at: string
+          user_id: string
+          water_reminders: boolean | null
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          allergies?: string[] | null
+          created_at?: string
+          family_members?: number | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          meals?: string[] | null
+          monthly_budget?: number | null
+          reminder_interval?: number | null
+          sport_frequency?: number | null
+          sport_type?: string | null
+          updated_at?: string
+          user_id: string
+          water_reminders?: boolean | null
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          allergies?: string[] | null
+          created_at?: string
+          family_members?: number | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          meals?: string[] | null
+          monthly_budget?: number | null
+          reminder_interval?: number | null
+          sport_frequency?: number | null
+          sport_type?: string | null
+          updated_at?: string
+          user_id?: string
+          water_reminders?: boolean | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

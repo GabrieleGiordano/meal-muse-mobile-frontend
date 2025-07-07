@@ -1,25 +1,34 @@
 
-import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { OnboardingStepper } from '@/components/onboarding/OnboardingStepper';
 
 const OnboardingPage = () => {
-  const { user } = useAuth();
+  const { user, userProfile, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-food-green-light to-food-orange-light">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Caricamento...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  if (user.isOnboarded) {
+  if (userProfile?.isOnboarded) {
     return <Navigate to="/" replace />;
   }
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('fame_onboarded', 'true');
-    // In a real app, you would also update the user's onboarded status via API
-    window.location.reload(); // Simple way to trigger auth context update
+    // Refresh the page to trigger a re-fetch of user profile
+    window.location.href = '/';
   };
 
   return (

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ const AuthPage = () => {
     name: '',
     confirmPassword: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (user) {
     return <Navigate to="/" replace />;
@@ -24,6 +25,7 @@ const AuthPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     if (!isLoginMode && formData.password !== formData.confirmPassword) {
       toast({
@@ -31,26 +33,70 @@ const AuthPage = () => {
         description: "Le password non corrispondono",
         variant: "destructive"
       });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isLoginMode && formData.password.length < 6) {
+      toast({
+        title: "Errore",
+        description: "La password deve essere di almeno 6 caratteri",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
       return;
     }
 
     try {
       if (isLoginMode) {
-        await login(formData.email, formData.password);
+        const { error } = await login(formData.email, formData.password);
+        if (error) {
+          if (error.includes('Invalid login credentials')) {
+            toast({
+              title: "Credenziali non valide",
+              description: "Email o password errate. Se non hai un account, registrati prima.",
+              variant: "destructive"
+            });
+          } else {
+            toast({
+              title: "Errore di accesso",
+              description: error,
+              variant: "destructive"
+            });
+          }
+        } else {
+          toast({
+            title: "Benvenuto!",
+            description: "Accesso effettuato con successo"
+          });
+        }
       } else {
-        await register(formData.email, formData.password, formData.name);
+        const { error } = await register(formData.email, formData.password, formData.name);
+        if (error) {
+          if (error.includes('User already registered')) {
+            toast({
+              title: "Utente già registrato",
+              description: "Questo indirizzo email è già in uso. Prova ad accedere.",
+              variant: "destructive"
+            });
+            setIsLoginMode(true);
+          } else {
+            toast({
+              title: "Errore di registrazione",
+              description: error,
+              variant: "destructive"
+            });
+          }
+        }
       }
-      
-      toast({
-        title: "Successo!",
-        description: isLoginMode ? "Accesso effettuato con successo" : "Registrazione completata"
-      });
     } catch (error) {
       toast({
         title: "Errore",
-        description: "Credenziali non valide. Riprova.",
+        description: "Si è verificato un errore. Riprova più tardi.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -65,7 +111,7 @@ const AuthPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-food-green-light to-food-orange-light p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-primary-gradient rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
             F
           </div>
           <CardTitle className="text-2xl font-bold">
@@ -115,7 +161,7 @@ const AuthPage = () => {
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Password"
+                placeholder={isLoginMode ? "Password" : "Minimo 6 caratteri"}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
@@ -139,10 +185,10 @@ const AuthPage = () => {
             
             <Button 
               type="submit" 
-              className="w-full bg-primary-gradient hover:opacity-90 transition-opacity"
-              disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+              disabled={isLoading || isSubmitting}
             >
-              {isLoading ? 'Caricamento...' : (isLoginMode ? 'Accedi' : 'Registrati')}
+              {isSubmitting ? 'Caricamento...' : (isLoginMode ? 'Accedi' : 'Registrati')}
             </Button>
           </form>
           
@@ -150,7 +196,7 @@ const AuthPage = () => {
             <button
               type="button"
               onClick={() => setIsLoginMode(!isLoginMode)}
-              className="text-primary hover:underline"
+              className="text-primary hover:underline font-medium"
             >
               {isLoginMode 
                 ? 'Non hai un account? Registrati' 
@@ -159,14 +205,12 @@ const AuthPage = () => {
             </button>
           </div>
           
-          {isLoginMode && (
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Password dimenticata?
-              </button>
+          {!isLoginMode && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                📧 Dopo la registrazione riceverai un'email di conferma. 
+                Clicca sul link per attivare il tuo account.
+              </p>
             </div>
           )}
         </CardContent>
