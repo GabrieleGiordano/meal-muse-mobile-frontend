@@ -18,7 +18,7 @@ export const PreferencesStep = ({ data, updateData }: PreferencesStepProps) => {
         </Label>
         <RadioGroup
           value={data.goal}
-          onValueChange={(value) => updateData({ goal: value as OnboardingData['goal'] })}
+          onValueChange={(value) => updateData({ goal: value })}
           className="space-y-3"
         >
           <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50">

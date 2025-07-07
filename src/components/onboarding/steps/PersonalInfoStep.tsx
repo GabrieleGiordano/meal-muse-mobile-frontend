@@ -16,7 +16,7 @@ export const PersonalInfoStep = ({ data, updateData }: PersonalInfoStepProps) =>
         <Label className="text-base font-medium mb-3 block">Sesso</Label>
         <RadioGroup
           value={data.gender}
-          onValueChange={(value) => updateData({ gender: value as 'male' | 'female' })}
+          onValueChange={(value) => updateData({ gender: value })}
           className="flex space-x-6"
         >
           <div className="flex items-center space-x-2">

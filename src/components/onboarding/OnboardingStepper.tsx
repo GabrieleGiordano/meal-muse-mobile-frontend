@@ -15,7 +15,7 @@ import { toast } from '@/hooks/use-toast';
 
 export interface OnboardingData {
   // Personal info
-  gender: 'male' | 'female' | '';
+  gender: string;
   age: number;
   weight: number;
   height: number;
@@ -26,7 +26,7 @@ export interface OnboardingData {
   
   // Dietary
   allergies: string[];
-  goal: 'lose_weight' | 'gain_muscle' | 'maintain' | '';
+  goal: string;
   meals: string[];
   familyMembers: number;
   
