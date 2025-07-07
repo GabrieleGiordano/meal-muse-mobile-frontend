@@ -58,7 +58,7 @@ const mockMeals = [
 ];
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Get user data from localStorage (in a real app, this would come from the backend)
@@ -79,7 +79,7 @@ const Index = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">
-          Ciao, {user?.name || 'Utente'}! 👋
+          Ciao, {userProfile?.full_name || 'Utente'}! 👋
         </h1>
         <p className="text-muted-foreground">
           Ecco il tuo piano alimentare per oggi
