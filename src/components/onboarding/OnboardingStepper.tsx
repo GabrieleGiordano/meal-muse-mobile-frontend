@@ -129,7 +129,7 @@ export const OnboardingStepper = ({ onComplete }: OnboardingStepperProps) => {
         
         <Button
           onClick={handleNext}
-          className="bg-primary-gradient hover:opacity-90"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
         >
           {currentStep === steps.length - 1 ? 'Completa' : 'Avanti'}
         </Button>
